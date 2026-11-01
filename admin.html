@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Пульт управления LIVE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 15px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 15px; border: 1px solid #2d2d2d; }
+        h2 { margin-top: 0; font-size: 18px; color: #ffd700; text-transform: uppercase; letter-spacing: 1px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #aaa; }
+        input, textarea { width: 100%; padding: 12px; background: #2d2d2d; border: 1px solid #444; border-radius: 6px; color: white; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
+        .btn { display: inline-block; width: 100%; padding: 14px; background: #0044cc; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; }
+        .btn:active { background: #0033aa; }
+        .btn-success { background: #007a33; }
+        .btn-success:active { background: #005c26; }
+        .row { display: flex; gap: 10px; }
+        .row .btn { flex: 1; }
+        .status { text-align: center; font-weight: bold; color: #00ff66; margin-top: 5px; font-size: 14px; }
+        .info-text { font-size: 14px; color: #888; margin-bottom: 10px; }
+    </style>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
+</head>
+<body>
+
+    <div class="card">
+        <h2>1. Настройки Турнира</h2>
+        <label>Название турнира</label>
+        <input type="text" id="tournament_title" value="ОТКРЫТЫЙ РИНГ MOSCOW FIGHT TEAM">
+        <label>Ссылка на Логотип (URL)</label>
+        <input type="text" id="logo_url" value="https://freeimage.host">
+        <button class="btn btn-success" onclick="saveSettings()">Сохранить настройки</button>
+        <div class="status" id="status_settings"></div>
+    </div>
+
+    <div class="card">
+        <h2>2. Загрузка списка пар (из Word)</h2>
+        <div class="info-text">Вставьте список. Формат: Боец 1 - Боец 2 (каждая пара с новой строки)</div>
+        <textarea id="raw_list" rows="6" placeholder="Иванов Иван - Петров Петр&#10;Алиев Марат - Сидоров Олег"></textarea>
+        <button class="btn" onclick="uploadList()">Загрузить весь список в базу</button>
+        <div class="status" id="status_upload" style="color: #ffd700;"></div>
+    </div>
+
+    <div class="card" style="border-color: #ffd700;">
+        <h2>3. Управление Эфиром LIVE</h2>
+        <div style="text-align:center; margin-bottom:15px; font-size:18px;">
+            Текущий статус: <span id="current_info" style="color:#ffd700; font-weight:bold;">Загрузка...</span>
+        </div>
+        <div class="row">
+            <button class="btn" onclick="prevFight()">◀ Пред. пара</button>
+            <button class="btn" onclick="nextFight()">След. пара ▶</button>
+        </div>
+        <label style="margin-top:10px;">Быстрое переключение раундов:</label>
+        <div class="row">
+            <button class="btn" style="background:#444;" onclick="setRound('РАУНД 1')">Р1</button>
+            <button class="btn" style="background:#444;" onclick="setRound('РАУНД 2')">Р2</button>
+            <button class="btn" style="background:#444;" onclick="setRound('РАУНД 3')">Р3</button>
+            <button class="btn" style="background:#8b0000;" onclick="setRound('ПЕРЕРЫВ')">ПЕРЕРЫВ</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = { databaseURL: 'https://firebaseio.com' };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref('live_graphics');
+
+        let fightsArray = [];
+        let currentIndex = 0;
+
+        // Следим за состоянием базы данных
+        db.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                currentIndex = data.current_index || 0;
+                fightsArray = data.fights || [];
+                
+                document.getElementById('tournament_title').value = data.tournament_title || '';
+                document.getElementById('logo_url').value = data.logo_url || '';
+                
+                if(fightsArray.length > 0 && fightsArray[currentIndex]) {
+                    const f = fightsArray[currentIndex];
+                    document.getElementById('current_info').innerText = `${f.pair_num}: ${f.red_name} vs ${f.blue_name} (${data.round_num || 'Р1'})`;
+                } else {
+                    document.getElementById('current_info').innerText = "Список пуст";
+                }
+            }
+        });
+
+        function saveSettings() {
+            db.update({
+                tournament_title: document.getElementById('tournament_title').value,
+                logo_url: document.getElementById('logo_url').value
+            });
+            showStatus('status_settings', 'Настройки сохранены!');
+        }
+
+        function uploadList() {
+            const text = document.getElementById('raw_list').value;
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const parsedFights = [];
+
+            lines.forEach((line, i) => {
+                let parts = line.split(/\s*-\s*|\s+vs\s+/i);
+                parsedFights.push({
+                    pair_num: `ПАРА №${i + 1}`,
+                    red_name: parts[0] ? parts[0].trim() : '...',
+                    blue_name: parts[1] ? parts[1].trim() : '...'
+                });
+            });
+
+            if(parsedFights.length > 0) {
+                db.update({
+                    fights: parsedFights,
+                    current_index: 0,
+                    round_num: 'РАУНД 1'
+                });
+                showStatus('status_upload', `Загружено пар: ${parsedFights.length}!`);
+            }
+        }
+
+        function nextFight() {
+            if(currentIndex < fightsArray.length - 1) {
+                db.update({ current_index: currentIndex + 1, round_num: 'РАУНД 1' });
+            }
+        }
+
+        function prevFight() {
+            if(currentIndex > 0) {
+                db.update({ current_index: currentIndex - 1, round_num: 'РАУНД 1' });
+            }
+        }
+
+        function setRound(rName) {
+            db.update({ round_num: rName });
+        }
+
+        function showStatus(id, msg) {
+            const el = document.getElementById(id);
+            el.innerText = msg;
+            setTimeout(() => el.innerText = '', 2000);
+        }
+    </script>
+</body>
+</html>
