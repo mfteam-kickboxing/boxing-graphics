@@ -2,20 +2,19 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Титры Бокс / Кикбоксинг LIVE</title>
-    <!-- Подключение официального Firebase SDK (v8) -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
+    <title>Титры Бокс / Кикбоксинг PRO</title>
     <style>
         html, body {
             margin: 0; padding: 0; background: transparent;
             font-family: 'Impact', 'Arial Black', sans-serif; font-weight: normal; color: white;
             overflow: hidden; width: 100vw; height: 100vh; position: relative; box-sizing: border-box;
         }
+        /* Контейнер графики прижат к верху своего виджета */
         .graphics-wrapper {
             position: absolute; top: 10px; left: 50%; transform: translateX(-50%); 
             display: flex; flex-direction: column; align-items: center; width: 95%; max-width: 1200px;
         }
+        /* Верхняя плашка турнира */
         .tournament-bar {
             background: rgba(17, 17, 17, 0.95); width: 100%; text-align: center;
             padding: 6px 0; font-size: 16px; color: #dddddd; text-transform: uppercase; letter-spacing: 3px;
@@ -28,12 +27,14 @@
             border-top-left-radius: 5px; border-top-right-radius: 5px; border: 2px solid #252525; border-bottom: none;
             min-width: 90px; text-align: center; margin-bottom: -1px; z-index: 10;
         }
+        /* Основная линия с бойцами */
         .main-bar { 
             display: flex; width: 100%; align-items: flex-end; background: #1a1a1a; 
             border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; overflow: hidden;
             box-shadow: 0 15px 35px rgba(0,0,0,0.9); box-sizing: border-box;
         }
         .badge { text-transform: uppercase; text-align: center; white-space: nowrap; font-size: 32px; letter-spacing: 1px; height: 60px; display: flex; align-items: center; box-sizing: border-box; }
+        /* Белый контрастный центр */
         .pair-num { 
             background: linear-gradient(to bottom, #ffffff, #e1e1e1); color: #000000; min-width: 130px; font-size: 26px; justify-content: center; z-index: 5; 
             border-left: 2px solid rgba(0,0,0,0.3); border-right: 2px solid rgba(0,0,0,0.3);
@@ -43,7 +44,7 @@
         .club-logo { width: 42px; height: 42px; object-fit: contain; border-radius: 50%; }
     </style>
 </head>
-<body onload="startLiveLogic()">
+<body>
 
     <div class="graphics-wrapper">
         <div class="tournament-bar" id="tournament">ТУРНИР</div>
@@ -64,51 +65,38 @@
     </div>
 
     <script>
-        let localFights = []; 
-
-        function startLiveLogic() {
-            // Загружаем сохраненный файткард из data.json
+        function updateData() {
+            // Читаем data.json. v= исключает зависание кэша
             fetch(`data.json?v=${Date.now()}`)
-                .then(res => res.json())
-                .then(jsonData => {
-                    if (jsonData && jsonData.fights) { localFights = jsonData.fights; }
-                    initFirebaseListener();
-                })
-                .catch(err => {
-                    console.error("Ошибка чтения data.json:", err);
-                    initFirebaseListener();
-                });
-        }
-
-        function initFirebaseListener() {
-            firebase.initializeApp({ databaseURL: 'https://firebaseio.com' });
-            const db = firebase.database().ref('live_graphics_control');
-
-            db.on('value', (snapshot) => {
-                const control = snapshot.val();
-                if (control) {
-                    if(control.tournament_title) document.getElementById('tournament').innerText = control.tournament_title;
-                    if(control.round_num) document.getElementById('round').innerText = control.round_num;
+                .then(res => { if (!res.ok) throw new Error(); return res.json(); })
+                .then(data => {
+                    if(data.tournament_title) document.getElementById('tournament').innerText = data.tournament_title;
+                    if(data.round_num) document.getElementById('round').innerText = data.round_num;
                     
-                    const index = control.current_index || 0;
+                    const index = data.current_index || 0;
+                    const fightsArray = data.fights ||;
                     
-                    if (localFights && localFights[index]) {
-                        document.getElementById('pair').innerText = localFights[index].pair_num || `ПАРА №${index + 1}`;
-                        document.getElementById('red').innerText = localFights[index].red_name || '...';
-                        document.getElementById('blue').innerText = localFights[index].blue_name || '...';
+                    if (fightsArray[index]) {
+                        document.getElementById('pair').innerText = fightsArray[index].pair_num || `ПАРА №${index + 1}`;
+                        document.getElementById('red').innerText = fightsArray[index].red_name || '...';
+                        document.getElementById('blue').innerText = fightsArray[index].blue_name || '...';
                     }
                     
                     const redLogo = document.getElementById('red-logo');
                     const blueLogo = document.getElementById('blue-logo');
-                    if (control.logo_url && control.logo_url.trim() !== "" && control.logo_url.indexOf('freeimage.host') === -1) {
-                        redLogo.src = control.logo_url; redLogo.style.display = "block";
-                        blueLogo.src = control.logo_url; blueLogo.style.display = "block";
+                    if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url.indexOf('freeimage.host') === -1) {
+                        redLogo.src = data.logo_url; redLogo.style.display = "block";
+                        blueLogo.src = data.logo_url; blueLogo.style.display = "block";
                     } else {
                         redLogo.style.display = "none"; blueLogo.style.display = "none";
                     }
-                }
-            });
+                })
+                .catch(err => console.error("Ошибка обновления:", err));
         }
+
+        // Обновление раз в 3 секунды
+        setInterval(updateData, 3000);
+        updateData();
     </script>
 </body>
 </html>
