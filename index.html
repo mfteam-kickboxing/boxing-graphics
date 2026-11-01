@@ -99,6 +99,11 @@
         s1.onload = () => {
             const s2 = document.createElement('script');
             s2.src = 'https://cloudflare.com';
+             const s1 = document.createElement('script');
+        s1.src = 'https' + '://' + '://cloudflare.com';
+        s1.onload = () => {
+            const s2 = document.createElement('script');
+            s2.src = 'https' + '://' + '://cloudflare.com';
             s2.onload = initSystem;
             document.head.appendChild(s2);
         };
