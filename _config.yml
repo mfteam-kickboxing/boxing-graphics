@@ -1,1 +1,4 @@
+cloudcannon:
+  data:
+    fighters: data.json
 
