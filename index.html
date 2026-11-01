@@ -8,19 +8,18 @@
             margin: 0; padding: 0; background: transparent;
             font-family: 'Impact', 'Arial Black', sans-serif; font-weight: normal; color: white;
             overflow: hidden; 
-            /* Убираем жесткую Full HD привязку, делаем адаптивный холст */
             width: 100vw; height: 100vh;
             position: relative;
             box-sizing: border-box;
         }
-        /* Главный контейнер графики - теперь центрируется по экрану телефона намертво */
+        /* Главный контейнер графики - сидит вверху своего виджета (top: 0) */
         .graphics-wrapper {
             position: absolute; 
-            bottom: 4%; /* Прижимаем к низу экрана на безопасное расстояние */
+            top: 10px; 
             left: 50%;
-            transform: translateX(-50%); /* Центрирование по горизонтали */
+            transform: translateX(-50%); 
             display: flex; flex-direction: column; align-items: center;
-            width: 90%; /* Занимает 90% от ширины экрана телефона */
+            width: 95%; 
             max-width: 1200px;
         }
         /* Верхняя плашка с названием турнира */
@@ -41,7 +40,7 @@
             align-items: center;
             position: relative;
         }
-        /* Плашка Раунда (сверху над номером пары) */
+        /* Плашка Раунда */
         .round-bar {
             background: #000000;
             color: #ffffff;
@@ -57,7 +56,7 @@
             margin-bottom: -1px; 
             z-index: 10;
         }
-        /* Нижняя основная линия с бойцами */
+        /* Основная линия с бойцами */
         .main-bar { 
             display: flex; 
             width: 100%;
@@ -68,19 +67,18 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.9);
             box-sizing: border-box;
         }
-        /* Общие стили для углов бойцов и центра */
         .badge { 
             text-transform: uppercase; text-align: center; 
             white-space: nowrap; 
-            font-size: 32px; /* Оптимальный размер шрифта для экранов телефонов */
+            font-size: 32px; 
             letter-spacing: 1px; 
-            height: 60px; /* Аккуратная высота плашки */
+            height: 60px; 
             display: flex; align-items: center;
             box-sizing: border-box;
         }
-        /* Номер пары (золотой центр) */
+        /* Новый белый центр: залит градиентом от чисто-белого к серебристому, текст — черный */
         .pair-num { 
-            background: linear-gradient(to bottom, #ffd700, #cca100); 
+            background: linear-gradient(to bottom, #ffffff, #e1e1e1); 
             color: #000000; 
             min-width: 130px; 
             font-size: 26px; 
@@ -89,7 +87,7 @@
             border-left: 2px solid rgba(0,0,0,0.3);
             border-right: 2px solid rgba(0,0,0,0.3);
         }
-        /* Красный угол (левый) */
+        /* Красный угол */
         .red-corner { 
             background: linear-gradient(to left, #7a0000, #cc0000); 
             flex: 1; 
@@ -97,7 +95,7 @@
             padding-right: 20px;
             gap: 12px; 
         }
-        /* Синий угол (правый) */
+        /* Синий угол */
         .blue-corner { 
             background: linear-gradient(to right, #002a99, #0044cc); 
             flex: 1; 
@@ -105,7 +103,7 @@
             padding-left: 20px;
             gap: 12px; 
         }
-        /* Стили для логотипа клуба */
+        /* Логотип клуба */
         .club-logo { width: 42px; height: 42px; object-fit: contain; border-radius: 50%; }
     </style>
 </head>
