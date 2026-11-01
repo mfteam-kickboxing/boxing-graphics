@@ -70,20 +70,19 @@
 
     <script>
         const SHEET_ID = '1qJN8lWmrtfL3mlH_MiwmYLZk-ylR55lTOcKMcKCOWU'; 
-        // Самый стабильный формат экспорта таблиц Google, который никогда не блокируется сайтами
-        const URL = `https://google.com{SHEET_ID}/export?format=csv&gid=0`;
+        // ВНИМАНИЕ: Здесь теперь прописан точный рабочий адрес ://google.com
+        const URL = `https://://google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=0`;
 
         function updateData() {
             fetch(URL)
                 .then(res => res.text())
                 .then(csvText => {
-                    // Разбираем CSV по строкам
                     const lines = csvText.split('\n');
                     if (lines.length > 1) {
-                        // Читаем строго вторую строку (индекс 1), где лежат фамилии
+                        // Читаем вторую строку (индекс 1)
                         const dataRow = lines[1].split(',');
                         
-                        // Очищаем текст от лишних кавычек Google и вставляем в плашки
+                        // Извлекаем чистые данные и убираем лишние кавычки
                         const pair = dataRow[0] ? dataRow[0].replace(/"/g, '').trim() : '';
                         const red = dataRow[1] ? dataRow[1].replace(/"/g, '').trim() : '';
                         const blue = dataRow[2] ? dataRow[2].replace(/"/g, '').trim() : '';
@@ -99,7 +98,7 @@
                 });
         }
 
-        // Автоматическое обновление данных на экране каждые 3 секунды
+        // Автоматическое обновление данных каждые 3 секунды
         setInterval(updateData, 3000);
         updateData();
     </script>
