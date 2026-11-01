@@ -2,94 +2,86 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Пульт-Генератор Титров</title>
+    <title>Пульт эфира LIVE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Подключение официального Firebase SDK со скриншота -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 15px; }
-        .card { background: #1e1e1e; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 15px; border: 1px solid #2d2d2d; }
-        h2 { margin-top: 0; font-size: 18px; color: #ffd700; text-transform: uppercase; letter-spacing: 1px; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: #aaa; }
-        input, textarea { width: 100%; padding: 12px; background: #2d2d2d; border: 1px solid #444; border-radius: 6px; color: white; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
-        .btn { display: inline-block; width: 100%; padding: 14px; background: #0044cc; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; width: 100%; }
-        .btn-success { background: #007a33; }
-        .row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .row .btn { flex: 1; margin-bottom: 0; }
-        .output-box { background: #111; border: 1px dashed #ffd700; padding: 15px; color: #00ff66; font-family: monospace; white-space: pre-wrap; word-break: break-all; border-radius: 6px; margin-top: 10px; display: none; font-size: 13px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 15px; border: 1px solid #2d2d2d; max-width: 500px; margin-left: auto; margin-right: auto; }
+        h2 { margin-top: 0; font-size: 20px; color: #ffd700; text-transform: uppercase; letter-spacing: 1px; text-align: center; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 6px; font-size: 14px; color: #aaa; }
+        input { width: 100%; padding: 12px; background: #2d2d2d; border: 1px solid #444; border-radius: 6px; color: white; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
+        .btn-trigger { display: inline-block; width: 100%; padding: 16px; background: #ffd700; color: black; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 10px rgba(255,215,0,0.3); }
+        .btn-trigger:active { background: #cca100; }
+        .status { text-align: center; font-weight: bold; color: #00ff66; margin-top: 10px; font-size: 14px; }
     </style>
 </head>
-<body>
+<body onload="initAdminPanel()">
 
     <div class="card">
-        <h2>1. Настройки Эфира</h2>
+        <h2>ПУЛЬТ ЭФИРА LIVE</h2>
+        
         <label>Название турнира</label>
-        <input type="text" id="tournament_title" value="ОТКРЫТЫЙ РИНГ MOSCOW FIGHT TEAM" oninput="generateJSON()">
+        <input type="text" id="tournament_title" value="Открытый ринг Moscow fight team">
         
-        <label>Ссылка на Логотип (URL)</label>
-        <input type="text" id="logo_url" value="https://freeimage.host" oninput="generateJSON()">
+        <label>Раунд / Статус</label>
+        <input type="text" id="round_num" value="РАУНД 1">
 
-        <label>Номер пары, которую нужно выпустить в эфир (цифра)</label>
-        <input type="number" id="current_index" value="1" min="1" oninput="generateJSON()">
+        <label>Номер пары</label>
+        <input type="text" id="pair_num" value="ПАРА №1">
 
-        <label>Текущий статус / Раунд</label>
-        <input type="text" id="round_num" value="РАУНД 1" oninput="generateJSON()">
-        <div class="row">
-            <button class="btn" style="background:#444;" onclick="document.getElementById('round_num').value='РАУНД 1'; generateJSON()">Р1</button>
-            <button class="btn" style="background:#444;" onclick="document.getElementById('round_num').value='РАУНД 2'; generateJSON()">Р2</button>
-            <button class="btn" style="background:#444;" onclick="document.getElementById('round_num').value='РАУНД 3'; generateJSON()">Р3</button>
-            <button class="btn" style="background:#8b0000;" onclick="document.getElementById('round_num').value='ПЕРЕРЫВ'; generateJSON()">ПЕРЕРЫВ</button>
-        </div>
-    </div>
+        <label>Красный угол (Слева)</label>
+        <input type="text" id="red_name" value="БОЕЦ КРАСНЫЙ">
 
-    <div class="card">
-        <h2>2. Состав всех пар (из Word)</h2>
-        <div style="font-size:14px; color:#888; margin-bottom:10px;">Вставьте сюда весь список участников (Боец 1 - Боец 2):</div>
-        <textarea id="raw_list" rows="6" placeholder="Иванов Иван - Петров Петр&#10;Алиев Марат - Сидоров Олег" oninput="generateJSON()"></textarea>
+        <label>Синий угол (Справа)</label>
+        <input type="text" id="blue_name" value="БОЕЦ СИНИЙ">
         
-        <button class="btn btn-success" onclick="generateJSON()">Сформировать код для data.json</button>
-        
-        <div id="result_title" style="margin-top:15px; font-weight:bold; display:none; color:#ffd700;">Скопируйте весь зеленый текст из рамки ниже:</div>
-        <div class="output-box" id="json_output"></div>
+        <label>Ссылка на Логотип (Если нужно)</label>
+        <input type="text" id="logo_url" value="https://mfteam.ru">
+
+        <button class="btn-trigger" onclick="updateLiveGraphics()">ОБНОВИТЬ ТИТРЫ</button>
+        <div class="status" id="status_text"></div>
     </div>
 
     <script>
-        function generateJSON() {
-            const text = document.getElementById('raw_list').value;
-            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            const parsedFights =;
+        let db = null;
 
-            lines.forEach((line, i) => {
-                let parts = line.split(/\s*-\s*|\s+vs\s+/i);
-                parsedFights.push({
-                    pair_num: `ПАРА №${i + 1}`,
-                    red_name: parts ? parts.trim() : '...',
-                    blue_name: parts ? parts.trim() : '...'
-                });
+        function initAdminPanel() {
+            // Подключение к вашей личной базе Realtime Database
+            firebase.initializeApp({ databaseURL: 'https://firebaseio.com' });
+            db = firebase.database().ref('live_graphics_panel');
+
+            // Подгружаем последние сохраненные в базе данные в поля пульта
+            db.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    if (data.tournament_title) document.getElementById('tournament_title').value = data.tournament_title;
+                    if (data.round_num) document.getElementById('round_num').value = data.round_num;
+                    if (data.pair_num) document.getElementById('pair_num').value = data.pair_num;
+                    if (data.red_name) document.getElementById('red_name').value = data.red_name;
+                    if (data.blue_name) document.getElementById('blue_name').value = data.blue_name;
+                    if (data.logo_url) document.getElementById('logo_url').value = data.logo_url;
+                }
             });
-
-            if(parsedFights.length === 0) {
-                parsedFights.push({ pair_num: "ПАРА №1", red_name: "БОЕЦ КРАСНЫЙ", blue_name: "БОЕЦ СИНИЙ" });
-            }
-
-            // Корректируем индекс под формат массива (начиная с 0)
-            let userIdx = parseInt(document.getElementById('current_index').value) || 1;
-            let finalIndex = userIdx - 1;
-            if (finalIndex < 0) finalIndex = 0;
-
-            const finalConfig = {
-                tournament_title: document.getElementById('tournament_title').value,
-                logo_url: document.getElementById('logo_url').value,
-                current_index: finalIndex,
-                round_num: document.getElementById('round_num').value,
-                fights: parsedFights
-            };
-
-            document.getElementById('result_title').style.display = 'block';
-            const out = document.getElementById('json_output');
-            out.style.display = 'block';
-            out.innerText = JSON.stringify(finalConfig, null, 2);
         }
-        // Первичный запуск
-        generateJSON();
+
+        function updateLiveGraphics() {
+            if(!db) return;
+            db.update({
+                tournament_title: document.getElementById('tournament_title').value,
+                round_num: document.getElementById('round_num').value,
+                pair_num: document.getElementById('pair_num').value,
+                red_name: document.getElementById('red_name').value,
+                blue_name: document.getElementById('blue_name').value,
+                logo_url: document.getElementById('logo_url').value
+            });
+            
+            const status = document.getElementById('status_text');
+            status.innerText = "ТИТРЫ ОБНОВЛЕНЫ НА СТРИМЕ!";
+            setTimeout(() => status.innerText = "", 2000);
+        }
     </script>
 </body>
 </html>
