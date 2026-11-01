@@ -61,7 +61,6 @@
     </div>
 
     <script>
-        // Безопасный динамический способ подключения библиотек Firebase без тегов script
         function initSystem() {
             const firebaseConfig = { databaseURL: 'https://firebaseio.com' };
             firebase.initializeApp(firebaseConfig);
@@ -80,10 +79,6 @@
                         document.getElementById('pair').innerText = fightsArray[index].pair_num || '';
                         document.getElementById('red').innerText = fightsArray[index].red_name || '';
                         document.getElementById('blue').innerText = fightsArray[index].blue_name || '';
-                    } else {
-                        document.getElementById('pair').innerText = 'КОНЕЦ';
-                        document.getElementById('red').innerText = '...';
-                        document.getElementById('blue').innerText = '...';
                     }
                     
                     const redLogo = document.getElementById('red-logo');
@@ -98,12 +93,12 @@
             });
         }
 
-        // Подгружаем скрипты по очереди и запускаем систему
+        // Подгружаем библиотеки через защищенный сервер cdnjs
         const s1 = document.createElement('script');
-        s1.src = 'https://gstatic.com';
+        s1.src = 'https://cloudflare.com';
         s1.onload = () => {
             const s2 = document.createElement('script');
-            s2.src = 'https://gstatic.com';
+            s2.src = 'https://cloudflare.com';
             s2.onload = initSystem;
             document.head.appendChild(s2);
         };
