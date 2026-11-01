@@ -9,12 +9,10 @@
             font-family: 'Impact', 'Arial Black', sans-serif; font-weight: normal; color: white;
             overflow: hidden; width: 100vw; height: 100vh; position: relative; box-sizing: border-box;
         }
-        /* Главный контейнер графики - привязан к верху своего виджета */
         .graphics-wrapper {
             position: absolute; top: 10px; left: 50%; transform: translateX(-50%); 
             display: flex; flex-direction: column; align-items: center; width: 95%; max-width: 1200px;
         }
-        /* Верхняя плашка с названием турнира */
         .tournament-bar {
             background: rgba(17, 17, 17, 0.95); width: 100%; text-align: center;
             padding: 6px 0; font-size: 16px; color: #dddddd; text-transform: uppercase; letter-spacing: 3px;
@@ -33,7 +31,6 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.9); box-sizing: border-box;
         }
         .badge { text-transform: uppercase; text-align: center; white-space: nowrap; font-size: 32px; letter-spacing: 1px; height: 60px; display: flex; align-items: center; box-sizing: border-box; }
-        /* Белый контрастный центр */
         .pair-num { 
             background: linear-gradient(to bottom, #ffffff, #e1e1e1); color: #000000; min-width: 130px; font-size: 26px; justify-content: center; z-index: 5; 
             border-left: 2px solid rgba(0,0,0,0.3); border-right: 2px solid rgba(0,0,0,0.3);
@@ -42,9 +39,6 @@
         .blue-corner { background: linear-gradient(to right, #002a99, #0044cc); flex: 1; justify-content: flex-start; padding-left: 20px; gap: 12px; }
         .club-logo { width: 42px; height: 42px; object-fit: contain; border-radius: 50%; }
     </style>
-    <!-- Подключаем официальные библиотеки Google Firebase -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
 </head>
 <body>
 
@@ -67,41 +61,53 @@
     </div>
 
     <script>
-        // Подключение к вашей базе данных Firebase
-        const firebaseConfig = { databaseURL: 'https://mfteam-default-rtdb.firebaseio.com/' };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database().ref('live_graphics');
+        // Безопасный динамический способ подключения библиотек Firebase без тегов script
+        function initSystem() {
+            const firebaseConfig = { databaseURL: 'https://firebaseio.com' };
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.database().ref('live_graphics');
 
-        // Ловим изменения "на лету" — без перезагрузок страницы
-        db.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                if(data.tournament_title) document.getElementById('tournament').innerText = data.tournament_title;
-                if(data.round_num) document.getElementById('round').innerText = data.round_num;
-                
-                const index = data.current_index || 0;
-                const fightsArray = data.fights || [];
-                
-                if (fightsArray[index]) {
-                    document.getElementById('pair').innerText = fightsArray[index].pair_num || '';
-                    document.getElementById('red').innerText = fightsArray[index].red_name || '';
-                    document.getElementById('blue').innerText = fightsArray[index].blue_name || '';
-                } else {
-                    document.getElementById('pair').innerText = 'КОНЕЦ';
-                    document.getElementById('red').innerText = '...';
-                    document.getElementById('blue').innerText = '...';
+            db.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    if(data.tournament_title) document.getElementById('tournament').innerText = data.tournament_title;
+                    if(data.round_num) document.getElementById('round').innerText = data.round_num;
+                    
+                    const index = data.current_index || 0;
+                    const fightsArray = data.fights || [];
+                    
+                    if (fightsArray[index]) {
+                        document.getElementById('pair').innerText = fightsArray[index].pair_num || '';
+                        document.getElementById('red').innerText = fightsArray[index].red_name || '';
+                        document.getElementById('blue').innerText = fightsArray[index].blue_name || '';
+                    } else {
+                        document.getElementById('pair').innerText = 'КОНЕЦ';
+                        document.getElementById('red').innerText = '...';
+                        document.getElementById('blue').innerText = '...';
+                    }
+                    
+                    const redLogo = document.getElementById('red-logo');
+                    const blueLogo = document.getElementById('blue-logo');
+                    if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "https://freeimage.host") {
+                        redLogo.src = data.logo_url; redLogo.style.display = "block";
+                        blueLogo.src = data.logo_url; blueLogo.style.display = "block";
+                    } else {
+                        redLogo.style.display = "none"; blueLogo.style.display = "none";
+                    }
                 }
-                
-                const redLogo = document.getElementById('red-logo');
-                const blueLogo = document.getElementById('blue-logo');
-                if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "https://freeimage.host") {
-                    redLogo.src = data.logo_url; redLogo.style.display = "block";
-                    blueLogo.src = data.logo_url; blueLogo.style.display = "block";
-                } else {
-                    redLogo.style.display = "none"; blueLogo.style.display = "none";
-                }
-            }
-        });
+            });
+        }
+
+        // Подгружаем скрипты по очереди и запускаем систему
+        const s1 = document.createElement('script');
+        s1.src = 'https://gstatic.com';
+        s1.onload = () => {
+            const s2 = document.createElement('script');
+            s2.src = 'https://gstatic.com';
+            s2.onload = initSystem;
+            document.head.appendChild(s2);
+        };
+        document.head.appendChild(s1);
     </script>
 </body>
 </html>
