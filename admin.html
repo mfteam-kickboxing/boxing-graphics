@@ -19,9 +19,6 @@
         .status { text-align: center; font-weight: bold; color: #00ff66; margin-top: 5px; font-size: 14px; }
         .info-text { font-size: 14px; color: #888; margin-bottom: 10px; }
     </style>
-    <!-- Полные прямые ссылки на базы Google Firebase -->
-    <script src="https://gstatic.com"></script>
-    <script src="https://gstatic.com"></script>
 </head>
 <body>
 
@@ -46,7 +43,7 @@
     <div class="card" style="border-color: #ffd700;">
         <h2>3. Управление Эфиром LIVE</h2>
         <div style="text-align:center; margin-bottom:15px; font-size:18px;">
-            Статус: <span id="current_info" style="color:#ffd700; font-weight:bold;">Загрузка данных...</span>
+            Статус: <span id="current_info" style="color:#ffd700; font-weight:bold;">Подключение...</span>
         </div>
         <div class="row">
             <button class="btn" onclick="prevFight()">◀ Пред. пара</button>
@@ -62,34 +59,38 @@
     </div>
 
     <script>
-        const firebaseConfig = { databaseURL: 'https://firebaseio.com' };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database().ref('live_graphics');
-
+        let db = null;
         let fightsArray = [];
         let currentIndex = 0;
 
-        db.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                currentIndex = data.current_index || 0;
-                fightsArray = data.fights || [];
-                
-                document.getElementById('tournament_title').value = data.tournament_title || '';
-                document.getElementById('logo_url').value = data.logo_url || '';
-                
-                if(fightsArray.length > 0 && fightsArray[currentIndex]) {
-                    const f = fightsArray[currentIndex];
-                    document.getElementById('current_info').innerText = `${f.pair_num}: ${f.red_name} vs ${f.blue_name} (${data.round_num || 'РАУНД 1'})`;
+        function initAdmin() {
+            const firebaseConfig = { databaseURL: 'https://firebaseio.com' };
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database().ref('live_graphics');
+
+            db.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    currentIndex = data.current_index || 0;
+                    fightsArray = data.fights || [];
+                    
+                    document.getElementById('tournament_title').value = data.tournament_title || '';
+                    document.getElementById('logo_url').value = data.logo_url || '';
+                    
+                    if(fightsArray.length > 0 && fightsArray[currentIndex]) {
+                        const f = fightsArray[currentIndex];
+                        document.getElementById('current_info').innerText = `${f.pair_num}: ${f.red_name} vs ${f.blue_name} (${data.round_num || 'РАУНД 1'})`;
+                    } else {
+                        document.getElementById('current_info').innerText = "Список пуст. Вставьте пары выше.";
+                    }
                 } else {
                     document.getElementById('current_info').innerText = "Список пуст. Вставьте пары выше.";
                 }
-            } else {
-                document.getElementById('current_info').innerText = "Список пуст. Вставьте пары выше.";
-            }
-        });
+            });
+        }
 
         function saveSettings() {
+            if(!db) return;
             db.update({
                 tournament_title: document.getElementById('tournament_title').value,
                 logo_url: document.getElementById('logo_url').value
@@ -98,6 +99,7 @@
         }
 
         function uploadList() {
+            if(!db) return;
             const text = document.getElementById('raw_list').value;
             const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
             const parsedFights = [];
@@ -122,18 +124,21 @@
         }
 
         function nextFight() {
+            if(!db) return;
             if(currentIndex < fightsArray.length - 1) {
                 db.update({ current_index: currentIndex + 1, round_num: 'РАУНД 1' });
             }
         }
 
         function prevFight() {
+            if(!db) return;
             if(currentIndex > 0) {
                 db.update({ current_index: currentIndex - 1, round_num: 'РАУНД 1' });
             }
         }
 
         function setRound(rName) {
+            if(!db) return;
             db.update({ round_num: rName });
         }
 
@@ -142,6 +147,17 @@
             el.innerText = msg;
             setTimeout(() => el.innerText = '', 2000);
         }
+
+        // Подгружаем базы через защищенный cdnjs
+        const s1 = document.createElement('script');
+        s1.src = 'https://cloudflare.com';
+        s1.onload = () => {
+            const s2 = document.createElement('script');
+            s2.src = 'https://cloudflare.com';
+            s2.onload = initAdmin;
+            document.head.appendChild(s2);
+        };
+        document.head.appendChild(s1);
     </script>
 </body>
 </html>
