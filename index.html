@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>Титры Бокс / Кикбоксинг LIVE</title>
     <!-- Подключение официального Firebase SDK (v8) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
     <style>
         html, body {
             margin: 0; padding: 0; background: transparent;
@@ -67,7 +67,7 @@
         let localFights = []; 
 
         function startLiveLogic() {
-            // Скачиваем ваш постоянный список пар из data.json
+            // Загружаем сохраненный файткард из data.json
             fetch(`data.json?v=${Date.now()}`)
                 .then(res => res.json())
                 .then(jsonData => {
@@ -81,8 +81,7 @@
         }
 
         function initFirebaseListener() {
-            // Инициализация с подключением к вашей Realtime Database
-            firebase.initializeApp({ databaseURL: 'https://mfteam-default-rtdb.firebaseio.com' });
+            firebase.initializeApp({ databaseURL: 'https://firebaseio.com' });
             const db = firebase.database().ref('live_graphics_control');
 
             db.on('value', (snapshot) => {
