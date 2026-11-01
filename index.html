@@ -70,33 +70,36 @@
 
     <script>
         const SHEET_ID = '1qJN8lWmrtfL3mlH_MiwmYLZk-ylR55lTOcKMcKCOWU'; 
-        // Исправлен адрес: теперь запрос идет строго к таблицам Google Docs
-        const URL = `https://google.com{SHEET_ID}/gviz/tq?tqx=out:json`;
+        // Самый стабильный формат экспорта таблиц Google, который никогда не блокируется сайтами
+        const URL = `https://google.com{SHEET_ID}/export?format=csv&gid=0`;
 
         function updateData() {
             fetch(URL)
                 .then(res => res.text())
-                .then(data => {
-                    // Форматируем ответ от Google в чистый JSON объект
-                    const start = data.indexOf('{');
-                    const end = data.lastIndexOf('}') + 1;
-                    const json = JSON.parse(data.substring(start, end));
-                    
-                    // Извлекаем первую строчку данных (индекс 0 в rows)
-                    const row = json.table.rows[0].c; 
-                    
-                    // Распределяем значения ячеек A2, B2, C2 по элементам интерфейса
-                    document.getElementById('pair').innerText = (row[0] && row[0].v) ? row[0].v : '';
-                    document.getElementById('red').innerText = (row[1] && row[1].v) ? row[1].v : '';
-                    document.getElementById('blue').innerText = (row[2] && row[2].v) ? row[2].v : '';
+                .then(csvText => {
+                    // Разбираем CSV по строкам
+                    const lines = csvText.split('\n');
+                    if (lines.length > 1) {
+                        // Читаем строго вторую строку (индекс 1), где лежат фамилии
+                        const dataRow = lines[1].split(',');
+                        
+                        // Очищаем текст от лишних кавычек Google и вставляем в плашки
+                        const pair = dataRow[0] ? dataRow[0].replace(/"/g, '').trim() : '';
+                        const red = dataRow[1] ? dataRow[1].replace(/"/g, '').trim() : '';
+                        const blue = dataRow[2] ? dataRow[2].replace(/"/g, '').trim() : '';
+
+                        document.getElementById('pair').innerText = pair;
+                        document.getElementById('red').innerText = red;
+                        document.getElementById('blue').innerText = blue;
+                    }
                 })
                 .catch(err => {
-                    console.error("Ошибка обновления данных:", err);
-                    document.getElementById('pair').innerText = "Ошибка";
+                    console.error("Ошибка чтения таблицы:", err);
+                    document.getElementById('pair').innerText = "ОШИБКА URL";
                 });
         }
 
-        // Автоматическое обновление каждые 3 секунды
+        // Автоматическое обновление данных на экране каждые 3 секунды
         setInterval(updateData, 3000);
         updateData();
     </script>
