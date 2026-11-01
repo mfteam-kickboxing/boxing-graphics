@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>Пульт управления LIVE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Подключение Firebase SDK (v8) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <!-- Использование официальных Firebase SDK по вашей спецификации -->
+    <script src="https://gstatic.com"></script>
+    <script src="https://gstatic.com"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #121212; color: #e0e0e0; margin: 0; padding: 15px; }
         .card { background: #1e1e1e; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 15px; border: 1px solid #2d2d2d; }
@@ -35,7 +35,7 @@
     <div class="card" style="border-color: #ffd700;">
         <h2>2. Управление Эфиром LIVE</h2>
         <div style="text-align:center; margin: 15px 0; font-size:18px; background:#222; padding:15px; border-radius:6px;">
-            В ЭФИРЕ СЕЙЧАС: <br><span id="current_info" style="color:#ffd700; font-weight:bold;">Подключение к базе...</span>
+            В ЭФИРЕ СЕЙЧАС: <br><span id="current_info" style="color:#ffd700; font-weight:bold;">Подключение...</span>
         </div>
 
         <div class="row">
@@ -58,8 +58,7 @@
         let currentRound = "РАУНД 1";
 
         function initFirebaseLive() {
-            // Подключение к вашей базе данных проекта mfteam
-            firebase.initializeApp({ databaseURL: 'https://mfteam-default-rtdb.firebaseio.com' });
+            firebase.initializeApp({ databaseURL: 'https://firebaseio.com' });
             db = firebase.database().ref('live_graphics_control');
 
             db.on('value', (snapshot) => {
@@ -71,7 +70,7 @@
                     document.getElementById('logo_url').value = data.logo_url || '';
                     document.getElementById('current_info').innerHTML = `ПАРА №${currentIndex + 1}<br><span style="color:#fff; font-size:14px;">${currentRound}</span>`;
                 } else {
-                    document.getElementById('current_info').innerText = "База пуста. Нажмите кнопку выше.";
+                    document.getElementById('current_info').innerText = "База пуста. Нажмите любую кнопку раунда для инициализации.";
                 }
             });
         }
@@ -96,4 +95,9 @@
         }
 
         function setRoundLive(rName) {
-            
+            currentRound = rName;
+            pushLiveControl();
+        }
+    </script>
+</body>
+</html>
