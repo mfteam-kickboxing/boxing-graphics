@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Титры Бокс / Кикбоксинг LIVE</title>
+    <!-- Подключение официального Firebase SDK (v8) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         html, body {
             margin: 0; padding: 0; background: transparent;
@@ -40,7 +43,7 @@
         .club-logo { width: 42px; height: 42px; object-fit: contain; border-radius: 50%; }
     </style>
 </head>
-<body>
+<body onload="startLiveLogic()">
 
     <div class="graphics-wrapper">
         <div class="tournament-bar" id="tournament">ТУРНИР</div>
@@ -78,7 +81,8 @@
         }
 
         function initFirebaseListener() {
-            firebase.initializeApp({ databaseURL: 'https://firebaseio.com' });
+            // Инициализация с подключением к вашей Realtime Database
+            firebase.initializeApp({ databaseURL: 'https://mfteam-default-rtdb.firebaseio.com' });
             const db = firebase.database().ref('live_graphics_control');
 
             db.on('value', (snapshot) => {
@@ -106,16 +110,6 @@
                 }
             });
         }
-
-        const sc1 = document.createElement('script');
-        sc1.src = 'https' + '://' + '://cloudflare.com';
-        sc1.onload = () => {
-            const sc2 = document.createElement('script');
-            sc2.src = 'https' + '://' + '://cloudflare.com';
-            sc2.onload = startLiveLogic;
-            document.head.appendChild(sc2);
-        };
-        document.head.appendChild(sc1);
     </script>
 </body>
 </html>
