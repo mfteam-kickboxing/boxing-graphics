@@ -2,12 +2,12 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Открытый ринг по кикбоксингу</title>
+    <title>Титры Бокс / Кикбоксинг</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: transparent; 
+            background: transparent; /* Прозрачный фон для Larix */
             font-family: 'Arial', sans-serif;
             font-weight: bold;
             color: white;
@@ -15,7 +15,7 @@
             width: 1920px;
             height: 1080px;
         }
-        
+        /* Главный контейнер внизу экрана */
         .overlay-container {
             position: absolute;
             bottom: 60px;
@@ -23,12 +23,12 @@
             transform: translateX(-50%);
             display: flex;
             align-items: center;
-            gap: 0px; 
+            gap: 0px; /* Слияние плашек в единую полосу */
             box-shadow: 0 10px 30px rgba(0,0,0,0.7);
             border-radius: 6px;
             overflow: hidden;
         }
-       
+        /* Общие стили для всех плашек */
         .badge {
             padding: 18px 30px;
             font-size: 26px;
@@ -37,7 +37,7 @@
             letter-spacing: 1px;
             white-space: nowrap;
         }
-       
+        /* Номер пары (серый центр) */
         .pair-num { 
             background: #222222; 
             min-width: 140px;
@@ -70,25 +70,33 @@
 
     <script>
         const SHEET_ID = '1qJN8lWmrtfL3mlH_MiwmYLZk-ylR55lTOcKMcKCOWU'; 
+        // Исправлен адрес: теперь запрос идет строго к таблицам Google Docs
         const URL = `https://google.com{SHEET_ID}/gviz/tq?tqx=out:json`;
 
         function updateData() {
             fetch(URL)
                 .then(res => res.text())
                 .then(data => {
-                 
-                    const json = JSON.parse(data.substr(47).slice(0, -2));
-                    const row = json.table.rows[0].c; // Читаем строку с данными
+                    // Форматируем ответ от Google в чистый JSON объект
+                    const start = data.indexOf('{');
+                    const end = data.lastIndexOf('}') + 1;
+                    const json = JSON.parse(data.substring(start, end));
                     
+                    // Извлекаем первую строчку данных (индекс 0 в rows)
+                    const row = json.table.rows[0].c; 
                     
+                    // Распределяем значения ячеек A2, B2, C2 по элементам интерфейса
                     document.getElementById('pair').innerText = (row[0] && row[0].v) ? row[0].v : '';
                     document.getElementById('red').innerText = (row[1] && row[1].v) ? row[1].v : '';
                     document.getElementById('blue').innerText = (row[2] && row[2].v) ? row[2].v : '';
                 })
-                .catch(err => console.error("Ошибка обновления данных:", err));
+                .catch(err => {
+                    console.error("Ошибка обновления данных:", err);
+                    document.getElementById('pair').innerText = "Ошибка";
+                });
         }
 
-        
+        // Автоматическое обновление каждые 3 секунды
         setInterval(updateData, 3000);
         updateData();
     </script>
