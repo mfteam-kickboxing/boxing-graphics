@@ -69,7 +69,6 @@
     </div>
 
     <script>
-        // ЗАМЕНИТЕ СТРОКУ НИЖЕ НА ВАШ ID:
         const SHEET_ID = '1qJN8lWmrtfL3mlH_MiwmYLZk-ylR55lTOcKMcKCOWU'; 
         const URL = `https://google.com{SHEET_ID}/gviz/tq?tqx=out:json`;
 
@@ -79,12 +78,12 @@
                 .then(data => {
                     // Форматируем ответ от Google в чистый JSON
                     const json = JSON.parse(data.substr(47).slice(0, -2));
-                    const row = json.table.rows[0].c; // Читаем вторую строку таблицы
+                    const row = json.table.rows[0].c; // Читаем строку с данными
                     
-                    // Распределяем данные по плашкам на экране
-                    document.getElementById('pair').innerText = row[0] ? row[0].v : '';
-                    document.getElementById('red').innerText = row[1] ? row[1].v : '';
-                    document.getElementById('blue').innerText = row[2] ? row[2].v : '';
+                    // Распределяем данные по плашкам на экране с проверкой на пустые ячейки
+                    document.getElementById('pair').innerText = (row[0] && row[0].v) ? row[0].v : '';
+                    document.getElementById('red').innerText = (row[1] && row[1].v) ? row[1].v : '';
+                    document.getElementById('blue').innerText = (row[2] && row[2].v) ? row[2].v : '';
                 })
                 .catch(err => console.error("Ошибка обновления данных:", err));
         }
