@@ -9,35 +9,103 @@
         body {
             margin: 0; padding: 0; background: transparent;
             font-family: 'Manrope', sans-serif; font-weight: 700; color: white;
-            overflow: hidden; width: 1920px; height: 1080px;
+            overflow: hidden; 
+            /* Жестко задаем Full HD разрешение, под которое Larix адаптирует графику */
+            width: 1920px; height: 1080px;
+            position: relative;
         }
         /* Главный контейнер графики */
         .graphics-wrapper {
-            position: absolute; bottom: 60px; left: 50%;
-            transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8); border-radius: 8px; overflow: hidden;
+            position: absolute; 
+            bottom: 70px; /* Приподнимаем над нижним краем, чтобы не перекрывалось интерфейсом ВК */
+            left: 50%;
+            transform: translateX(-50%); /* Выравнивание строго по центру экрана */
+            display: flex; flex-direction: column; align-items: center;
+            width: 1300px; /* Фиксированная профессиональная ширина всей плашки */
         }
         /* Верхняя плашка с названием турнира */
         .tournament-bar {
-            background: #111111; width: 100%; text-align: center;
-            padding: 6px 0; font-size: 18px; color: #aaaaaa;
-            text-transform: uppercase; letter-spacing: 3px;
-            border-bottom: 1px solid #222222;
+            background: rgba(17, 17, 17, 0.95); 
+            width: 100%; text-align: center;
+            padding: 8px 0; font-size: 20px; color: #dddddd;
+            text-transform: uppercase; letter-spacing: 4px;
+            border-bottom: 2px solid #252525;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.6);
+            border-top-left-radius: 10px; border-top-right-radius: 10px;
+        }
+        /* Блок по центру, объединяющий раунд и пару */
+        .center-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        /* Плашка Раунда (сверху над номером пары) */
+        .round-bar {
+            background: #000000;
+            color: #ffffff;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px; /* Увеличили размер шрифта раунда */
+            padding: 4px 25px;
+            letter-spacing: 3px;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            border: 2px solid #252525;
+            border-bottom: none;
+            min-width: 110px;
+            text-align: center;
+            margin-bottom: -1px; 
+            z-index: 10;
         }
         /* Нижняя основная линия с бойцами */
-        .main-bar { display: flex; align-items: center; background: #1a1a1a; }
-        .badge { 
-            padding: 16px 30px; text-transform: uppercase; text-align: center; 
-            white-space: nowrap; font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 1px; 
+        .main-bar { 
+            display: flex; 
+            width: 100%;
+            align-items: flex-end; 
+            background: #1a1a1a; 
+            border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
         }
-        /* Номер пары (стильный контрастный центр) */
-        .pair-num { background: #ffd700; color: #000000; min-width: 120px; font-size: 34px; padding: 19px 20px; }
+        /* Общие стили для углов бойцов и центра */
+        .badge { 
+            text-transform: uppercase; text-align: center; 
+            white-space: nowrap; font-family: 'Bebas Neue', sans-serif; 
+            font-size: 52px; /* Крупный, читаемый спортивный шрифт */
+            letter-spacing: 1px; 
+            height: 85px; /* Увеличили высоту плашки для солидности */
+            display: flex; align-items: center;
+            box-sizing: border-box;
+        }
+        /* Номер пары (золотой центр) */
+        .pair-num { 
+            background: linear-gradient(to bottom, #ffd700, #cca100); 
+            color: #000000; 
+            min-width: 180px; 
+            font-size: 42px; 
+            justify-content: center; 
+            z-index: 5; 
+            border-left: 1px solid rgba(0,0,0,0.2);
+            border-right: 1px solid rgba(0,0,0,0.2);
+        }
         /* Красный угол (левый) */
-        .red-corner { background: linear-gradient(to left, #8b0000, #b30000); min-width: 360px; text-align: right; display: flex; align-items: center; justify-content: flex-end; gap: 15px; }
+        .red-corner { 
+            background: linear-gradient(to left, #7a0000, #cc0000); 
+            flex: 1; /* Растягивается равномерно влево */
+            justify-content: flex-end; 
+            padding-right: 35px;
+            gap: 20px; 
+        }
         /* Синий угол (правый) */
-        .blue-corner { background: linear-gradient(to right, #0033aa, #0044cc); min-width: 360px; text-align: left; display: flex; align-items: center; justify-content: flex-start; gap: 15px; }
+        .blue-corner { 
+            background: linear-gradient(to right, #002a99, #0044cc); 
+            flex: 1; /* Растягивается равномерно вправо */
+            justify-content: flex-start; 
+            padding-left: 35px;
+            gap: 20px; 
+        }
         /* Стили для логотипа клуба */
-        .club-logo { width: 42px; height: 42px; object-fit: contain; border-radius: 50%; }
+        .club-logo { width: 55px; height: 55px; object-fit: contain; border-radius: 50%; }
     </style>
 </head>
 <body>
@@ -53,8 +121,11 @@
                 <img src="" class="club-logo" id="red-logo" style="display:none;">
             </div>
             
-            <!-- Номер пары -->
-            <div class="badge pair-num" id="pair">...</div>
+            <!-- Центральный блок: Раунд + Пара -->
+            <div class="center-block">
+                <div class="round-bar" id="round">...</div>
+                <div class="badge pair-num" id="pair">...</div>
+            </div>
             
             <!-- Синий угол -->
             <div class="badge blue-corner">
@@ -69,17 +140,16 @@
             fetch(`data.json?v=${Date.now()}`)
                 .then(res => { if (!res.ok) throw new Error(); return res.json(); })
                 .then(data => {
-                    // Обновляем текстовые поля
                     document.getElementById('tournament').innerText = data.tournament_title || '';
                     document.getElementById('pair').innerText = data.pair_num || '';
+                    document.getElementById('round').innerText = data.round_num || '';
                     document.getElementById('red').innerText = data.red_name || '';
                     document.getElementById('blue').innerText = data.blue_name || '';
                     
-                    // Обновляем логотипы, если ссылка заполнена
                     const redLogo = document.getElementById('red-logo');
                     const blueLogo = document.getElementById('blue-logo');
                     
-                    if (data.logo_url && data.logo_url.trim() !== "") {
+                    if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "https://icons8.com") {
                         redLogo.src = data.logo_url; redLogo.style.display = "block";
                         blueLogo.src = data.logo_url; blueLogo.style.display = "block";
                     } else {
