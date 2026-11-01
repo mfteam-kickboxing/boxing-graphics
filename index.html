@@ -39,6 +39,7 @@
         .blue-corner { background: linear-gradient(to right, #002a99, #0044cc); flex: 1; justify-content: flex-start; padding-left: 20px; gap: 12px; }
         .club-logo { width: 42px; height: 42px; object-fit: contain; border-radius: 50%; }
     </style>
+    <!-- Библиотеки Firebase -->
     <script src="https://gstatic.com"></script>
     <script src="https://gstatic.com"></script>
 </head>
@@ -84,7 +85,7 @@
                 
                 const redLogo = document.getElementById('red-logo');
                 const blueLogo = document.getElementById('blue-logo');
-                if (data.logo_url && data.logo_url.trim() !== "") {
+                if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "https://icons8.com") {
                     redLogo.src = data.logo_url; redLogo.style.display = "block";
                     blueLogo.src = data.logo_url; blueLogo.style.display = "block";
                 } else {
