@@ -43,7 +43,7 @@
 <body>
 
     <div class="graphics-wrapper">
-        <div class="tournament-bar" id="tournament">ПОДКЛЮЧЕНИЕ...</div>
+        <div class="tournament-bar" id="tournament">ТУРНИР</div>
         <div class="main-bar">
             <div class="badge red-corner">
                 <span id="red">БОЕЦ КРАСНЫЙ</span>
@@ -61,32 +61,45 @@
     </div>
 
     <script>
-        function startLiveStream() {
-            // Подключаемся к вашей базе
-            firebase.initializeApp({ databaseURL: 'https://firebaseio.com' });
-            const db = firebase.database().ref('live_graphics');
+        let localFights = []; 
 
-            // Мгновенно ловим нажатия кнопок с пульта
+        function startLiveLogic() {
+            // Скачиваем ваш постоянный список пар из data.json
+            fetch(`data.json?v=${Date.now()}`)
+                .then(res => res.json())
+                .then(jsonData => {
+                    if (jsonData && jsonData.fights) { localFights = jsonData.fights; }
+                    initFirebaseListener();
+                })
+                .catch(err => {
+                    console.error("Ошибка чтения data.json:", err);
+                    initFirebaseListener();
+                });
+        }
+
+        function initFirebaseListener() {
+            firebase.initializeApp({ databaseURL: 'https://firebaseio.com' });
+            const db = firebase.database().ref('live_graphics_control');
+
             db.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    if(data.tournament_title) document.getElementById('tournament').innerText = data.tournament_title;
-                    if(data.round_num) document.getElementById('round').innerText = data.round_num;
+                const control = snapshot.val();
+                if (control) {
+                    if(control.tournament_title) document.getElementById('tournament').innerText = control.tournament_title;
+                    if(control.round_num) document.getElementById('round').innerText = control.round_num;
                     
-                    const index = data.current_index || 0;
-                    const fightsArray = data.fights || [];
+                    const index = control.current_index || 0;
                     
-                    if (fightsArray[index]) {
-                        document.getElementById('pair').innerText = fightsArray[index].pair_num || '';
-                        document.getElementById('red').innerText = fightsArray[index].red_name || '';
-                        document.getElementById('blue').innerText = fightsArray[index].blue_name || '';
+                    if (localFights && localFights[index]) {
+                        document.getElementById('pair').innerText = localFights[index].pair_num || `ПАРА №${index + 1}`;
+                        document.getElementById('red').innerText = localFights[index].red_name || '...';
+                        document.getElementById('blue').innerText = localFights[index].blue_name || '...';
                     }
                     
                     const redLogo = document.getElementById('red-logo');
                     const blueLogo = document.getElementById('blue-logo');
-                    if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url.indexOf('freeimage.host') === -1) {
-                        redLogo.src = data.logo_url; redLogo.style.display = "block";
-                        blueLogo.src = data.logo_url; blueLogo.style.display = "block";
+                    if (control.logo_url && control.logo_url.trim() !== "" && control.logo_url.indexOf('freeimage.host') === -1) {
+                        redLogo.src = control.logo_url; redLogo.style.display = "block";
+                        blueLogo.src = control.logo_url; blueLogo.style.display = "block";
                     } else {
                         redLogo.style.display = "none"; blueLogo.style.display = "none";
                     }
@@ -94,13 +107,12 @@
             });
         }
 
-        // Защищенный способ загрузки скриптов Google без блокировок чата
         const sc1 = document.createElement('script');
-        sc1.src = 'https://gstatic.com';
+        sc1.src = 'https' + '://' + '://cloudflare.com';
         sc1.onload = () => {
             const sc2 = document.createElement('script');
-            sc2.src = 'https://gstatic.com';
-            sc2.onload = startLiveStream;
+            sc2.src = 'https' + '://' + '://cloudflare.com';
+            sc2.onload = startLiveLogic;
             document.head.appendChild(sc2);
         };
         document.head.appendChild(sc1);
