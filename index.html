@@ -2,17 +2,14 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Титры Бокс / Кикбоксинг PRO</title>
+    <title>Титры Бокс / Кикбоксинг LIVE</title>
     <style>
         html, body {
             margin: 0; padding: 0; background: transparent;
             font-family: 'Impact', 'Arial Black', sans-serif; font-weight: normal; color: white;
-            overflow: hidden; 
-            width: 100vw; height: 100vh;
-            position: relative;
-            box-sizing: border-box;
+            overflow: hidden; width: 100vw; height: 100vh; position: relative; box-sizing: border-box;
         }
-        /* Главный контейнер графики - сидит вверху своего виджета (top: 0) */
+        /* Главный контейнер графики - привязан к верху своего виджета */
         .graphics-wrapper {
             position: absolute; 
             top: 10px; 
@@ -76,7 +73,7 @@
             display: flex; align-items: center;
             box-sizing: border-box;
         }
-        /* Новый белый центр: залит градиентом от чисто-белого к серебристому, текст — черный */
+        /* Белый контрастный центр */
         .pair-num { 
             background: linear-gradient(to bottom, #ffffff, #e1e1e1); 
             color: #000000; 
@@ -106,6 +103,9 @@
         /* Логотип клуба */
         .club-logo { width: 42px; height: 42px; object-fit: contain; border-radius: 50%; }
     </style>
+    <!-- Подключаем официальную библиотеку связи Google Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
@@ -128,31 +128,34 @@
     </div>
 
     <script>
-        function updateData() {
-            fetch(`data.json?v=${Date.now()}`)
-                .then(res => { if (!res.ok) throw new Error(); return res.json(); })
-                .then(data => {
-                    if(data.tournament_title) document.getElementById('tournament').innerText = data.tournament_title;
-                    if(data.pair_num) document.getElementById('pair').innerText = data.pair_num;
-                    if(data.round_num) document.getElementById('round').innerText = data.round_num;
-                    if(data.red_name) document.getElementById('red').innerText = data.red_name;
-                    if(data.blue_name) document.getElementById('blue').innerText = data.blue_name;
-                    
-                    const redLogo = document.getElementById('red-logo');
-                    const blueLogo = document.getElementById('blue-logo');
-                    
-                    if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "https://icons8.com" && data.logo_url !== "https://freeimage.host") {
-                        redLogo.src = data.logo_url; redLogo.style.display = "block";
-                        blueLogo.src = data.logo_url; blueLogo.style.display = "block";
-                    } else {
-                        redLogo.style.display = "none"; blueLogo.style.display = "none";
-                    }
-                })
-                .catch(err => console.error("Ошибка обновления:", err));
-        }
+        // Подключаем вашу мгновенную базу данных
+        const firebaseConfig = {
+            databaseURL: 'https://mfteam-default-rtdb.firebaseio.com/'
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref('live_graphics');
 
-        setInterval(updateData, 3000);
-        updateData();
+        // Ловим изменения "на лету" — без перезагрузок страницы
+        db.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                if(data.tournament_title) document.getElementById('tournament').innerText = data.tournament_title;
+                if(data.pair_num) document.getElementById('pair').innerText = data.pair_num;
+                if(data.round_num) document.getElementById('round').innerText = data.round_num;
+                if(data.red_name) document.getElementById('red').innerText = data.red_name;
+                if(data.blue_name) document.getElementById('blue').innerText = data.blue_name;
+                
+                const redLogo = document.getElementById('red-logo');
+                const blueLogo = document.getElementById('blue-logo');
+                
+                if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "https://icons8.com") {
+                    redLogo.src = data.logo_url; redLogo.style.display = "block";
+                    blueLogo.src = data.logo_url; blueLogo.style.display = "block";
+                } else {
+                    redLogo.style.display = "none"; blueLogo.style.display = "none";
+                }
+            }
+        });
     </script>
 </body>
 </html>
