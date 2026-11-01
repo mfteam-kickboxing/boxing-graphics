@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Титры Бокс / Кикбоксинг PRO</title>
-    <!-- Подключаем профессиональные спортивные шрифты -->
-    <link rel="preconnect" href="https://googleapis.com">
-    <link rel="preconnect" href="https://gstatic.com" crossorigin>
-    <link href="https://googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@700&display=swap" rel="stylesheet">
     <style>
-        body {
+        html, body {
             margin: 0; padding: 0; background: transparent;
-            font-family: 'Manrope', sans-serif; font-weight: 700; color: white;
+            font-family: 'Impact', 'Arial Black', sans-serif; font-weight: normal; color: white;
             overflow: hidden; 
-            width: 1920px; height: 1080px;
+            /* Убираем жесткую Full HD привязку, делаем адаптивный холст */
+            width: 100vw; height: 100vh;
             position: relative;
+            box-sizing: border-box;
         }
-        /* Главный контейнер графики */
+        /* Главный контейнер графики - теперь центрируется по экрану телефона намертво */
         .graphics-wrapper {
             position: absolute; 
-            bottom: 70px; /* Приподнимаем над нижним краем под интерфейс ВК */
+            bottom: 4%; /* Прижимаем к низу экрана на безопасное расстояние */
             left: 50%;
-            transform: translateX(-50%); /* Выравнивание строго по центру экрана */
+            transform: translateX(-50%); /* Центрирование по горизонтали */
             display: flex; flex-direction: column; align-items: center;
-            width: 1300px; /* Фиксированная профессиональная ширина всей плашки */
+            width: 90%; /* Занимает 90% от ширины экрана телефона */
+            max-width: 1200px;
         }
         /* Верхняя плашка с названием турнира */
         .tournament-bar {
             background: rgba(17, 17, 17, 0.95); 
             width: 100%; text-align: center;
-            padding: 8px 0; font-size: 20px; color: #dddddd;
-            text-transform: uppercase; letter-spacing: 4px;
+            padding: 6px 0; font-size: 16px; color: #dddddd;
+            text-transform: uppercase; letter-spacing: 3px;
             border-bottom: 2px solid #252525;
             box-shadow: 0 -5px 20px rgba(0,0,0,0.6);
-            border-top-left-radius: 10px; border-top-right-radius: 10px;
+            border-top-left-radius: 8px; border-top-right-radius: 8px;
+            box-sizing: border-box;
         }
         /* Блок по центру, объединяющий раунд и пару */
         .center-block {
@@ -45,15 +45,14 @@
         .round-bar {
             background: #000000;
             color: #ffffff;
-            font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px; 
-            padding: 4px 25px;
-            letter-spacing: 3px;
-            border-top-left-radius: 6px;
-            border-top-right-radius: 6px;
+            font-size: 20px; 
+            padding: 3px 20px;
+            letter-spacing: 2px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
             border: 2px solid #252525;
             border-bottom: none;
-            min-width: 110px;
+            min-width: 90px;
             text-align: center;
             margin-bottom: -1px; 
             z-index: 10;
@@ -64,17 +63,18 @@
             width: 100%;
             align-items: flex-end; 
             background: #1a1a1a; 
-            border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.9);
+            box-sizing: border-box;
         }
         /* Общие стили для углов бойцов и центра */
         .badge { 
             text-transform: uppercase; text-align: center; 
-            white-space: nowrap; font-family: 'Bebas Neue', sans-serif; 
-            font-size: 52px; 
+            white-space: nowrap; 
+            font-size: 32px; /* Оптимальный размер шрифта для экранов телефонов */
             letter-spacing: 1px; 
-            height: 85px; 
+            height: 60px; /* Аккуратная высота плашки */
             display: flex; align-items: center;
             box-sizing: border-box;
         }
@@ -82,56 +82,49 @@
         .pair-num { 
             background: linear-gradient(to bottom, #ffd700, #cca100); 
             color: #000000; 
-            min-width: 180px; 
-            font-size: 42px; 
+            min-width: 130px; 
+            font-size: 26px; 
             justify-content: center; 
             z-index: 5; 
-            border-left: 1px solid rgba(0,0,0,0.2);
-            border-right: 1px solid rgba(0,0,0,0.2);
+            border-left: 2px solid rgba(0,0,0,0.3);
+            border-right: 2px solid rgba(0,0,0,0.3);
         }
         /* Красный угол (левый) */
         .red-corner { 
             background: linear-gradient(to left, #7a0000, #cc0000); 
             flex: 1; 
             justify-content: flex-end; 
-            padding-right: 35px;
-            gap: 20px; 
+            padding-right: 20px;
+            gap: 12px; 
         }
         /* Синий угол (правый) */
         .blue-corner { 
             background: linear-gradient(to right, #002a99, #0044cc); 
             flex: 1; 
             justify-content: flex-start; 
-            padding-left: 35px;
-            gap: 20px; 
+            padding-left: 20px;
+            gap: 12px; 
         }
         /* Стили для логотипа клуба */
-        .club-logo { width: 55px; height: 55px; object-fit: contain; border-radius: 50%; }
+        .club-logo { width: 42px; height: 42px; object-fit: contain; border-radius: 50%; }
     </style>
 </head>
 <body>
 
     <div class="graphics-wrapper">
-        <!-- Название турнира -->
-        <div class="tournament-bar" id="tournament">ЗАГРУЗКА...</div>
-        
+        <div class="tournament-bar" id="tournament">ТУРНИР</div>
         <div class="main-bar">
-            <!-- Красный угол -->
             <div class="badge red-corner">
-                <span id="red">...</span>
+                <span id="red">БОЕЦ КРАСНЫЙ</span>
                 <img src="" class="club-logo" id="red-logo" style="display:none;">
             </div>
-            
-            <!-- Центральный блок: Раунд + Пара -->
             <div class="center-block">
-                <div class="round-bar" id="round">...</div>
-                <div class="badge pair-num" id="pair">...</div>
+                <div class="round-bar" id="round">РАУНД 1</div>
+                <div class="badge pair-num" id="pair">ПАРА №1</div>
             </div>
-            
-            <!-- Синий угол -->
             <div class="badge blue-corner">
                 <img src="" class="club-logo" id="blue-logo" style="display:none;">
-                <span id="blue">...</span>
+                <span id="blue">БОЕЦ СИНИЙ</span>
             </div>
         </div>
     </div>
@@ -141,26 +134,23 @@
             fetch(`data.json?v=${Date.now()}`)
                 .then(res => { if (!res.ok) throw new Error(); return res.json(); })
                 .then(data => {
-                    document.getElementById('tournament').innerText = data.tournament_title || '';
-                    document.getElementById('pair').innerText = data.pair_num || '';
-                    document.getElementById('round').innerText = data.round_num || '';
-                    document.getElementById('red').innerText = data.red_name || '';
-                    document.getElementById('blue').innerText = data.blue_name || '';
+                    if(data.tournament_title) document.getElementById('tournament').innerText = data.tournament_title;
+                    if(data.pair_num) document.getElementById('pair').innerText = data.pair_num;
+                    if(data.round_num) document.getElementById('round').innerText = data.round_num;
+                    if(data.red_name) document.getElementById('red').innerText = data.red_name;
+                    if(data.blue_name) document.getElementById('blue').innerText = data.blue_name;
                     
                     const redLogo = document.getElementById('red-logo');
                     const blueLogo = document.getElementById('blue-logo');
                     
-                    if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "https://icons8.com") {
+                    if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "https://icons8.com" && data.logo_url !== "https://freeimage.host") {
                         redLogo.src = data.logo_url; redLogo.style.display = "block";
                         blueLogo.src = data.logo_url; blueLogo.style.display = "block";
                     } else {
                         redLogo.style.display = "none"; blueLogo.style.display = "none";
                     }
                 })
-                .catch(err => {
-                    console.error("Ошибка:", err);
-                    document.getElementById('pair').innerText = "ОШИБКА";
-                });
+                .catch(err => console.error("Ошибка обновления:", err));
         }
 
         setInterval(updateData, 3000);
