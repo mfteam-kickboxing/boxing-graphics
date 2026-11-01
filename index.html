@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>Титры Бокс / Кикбоксинг PRO</title>
-    <!-- Подключаем профессиональный спортивный шрифт Bebas Neue -->
+    <!-- Подключаем профессиональный спортивный шрифт Bebas Neue и Manrope -->
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
         body {
             margin: 0; padding: 0; background: transparent;
             font-family: 'Manrope', sans-serif; font-weight: 700; color: white;
             overflow: hidden; 
-            /* Жестко задаем Full HD разрешение, под которое Larix адаптирует графику */
             width: 1920px; height: 1080px;
             position: relative;
         }
         /* Главный контейнер графики */
         .graphics-wrapper {
             position: absolute; 
-            bottom: 70px; /* Приподнимаем над нижним краем, чтобы не перекрывалось интерфейсом ВК */
+            bottom: 70px; 
             left: 50%;
-            transform: translateX(-50%); /* Выравнивание строго по центру экрана */
+            transform: translateX(-50%); 
             display: flex; flex-direction: column; align-items: center;
-            width: 1300px; /* Фиксированная профессиональная ширина всей плашки */
+            width: 1300px; 
         }
         /* Верхняя плашка с названием турнира */
         .tournament-bar {
@@ -45,7 +44,7 @@
             background: #000000;
             color: #ffffff;
             font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px; /* Увеличили размер шрифта раунда */
+            font-size: 28px; 
             padding: 4px 25px;
             letter-spacing: 3px;
             border-top-left-radius: 6px;
@@ -71,9 +70,9 @@
         .badge { 
             text-transform: uppercase; text-align: center; 
             white-space: nowrap; font-family: 'Bebas Neue', sans-serif; 
-            font-size: 52px; /* Крупный, читаемый спортивный шрифт */
+            font-size: 52px; 
             letter-spacing: 1px; 
-            height: 85px; /* Увеличили высоту плашки для солидности */
+            height: 85px; 
             display: flex; align-items: center;
             box-sizing: border-box;
         }
@@ -91,7 +90,7 @@
         /* Красный угол (левый) */
         .red-corner { 
             background: linear-gradient(to left, #7a0000, #cc0000); 
-            flex: 1; /* Растягивается равномерно влево */
+            flex: 1; 
             justify-content: flex-end; 
             padding-right: 35px;
             gap: 20px; 
@@ -99,7 +98,7 @@
         /* Синий угол (правый) */
         .blue-corner { 
             background: linear-gradient(to right, #002a99, #0044cc); 
-            flex: 1; /* Растягивается равномерно вправо */
+            flex: 1; 
             justify-content: flex-start; 
             padding-left: 35px;
             gap: 20px; 
