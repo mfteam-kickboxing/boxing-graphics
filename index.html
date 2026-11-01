@@ -3,62 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <title>Титры Бокс / Кикбоксинг PRO</title>
-    <link href="https://googleapis.com" rel="stylesheet">
+    <!-- Подключаем профессиональные спортивные шрифты -->
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@700&display=swap" rel="stylesheet">
     <style>
         body {
             margin: 0; padding: 0; background: transparent;
             font-family: 'Manrope', sans-serif; font-weight: 700; color: white;
-            overflow: hidden; width: 1920px; height: 1080px; position: relative;
+            overflow: hidden; 
+            width: 1920px; height: 1080px;
+            position: relative;
         }
+        /* Главный контейнер графики */
         .graphics-wrapper {
-            position: absolute; bottom: 70px; left: 50%; transform: translateX(-50%);
-            display: flex; flex-direction: column; align-items: center; width: 1300px;
+            position: absolute; 
+            bottom: 70px; /* Приподнимаем над нижним краем под интерфейс ВК */
+            left: 50%;
+            transform: translateX(-50%); /* Выравнивание строго по центру экрана */
+            display: flex; flex-direction: column; align-items: center;
+            width: 1300px; /* Фиксированная профессиональная ширина всей плашки */
         }
+        /* Верхняя плашка с названием турнира */
         .tournament-bar {
-            background: rgba(17, 17, 17, 0.95); width: 100%; text-align: center;
+            background: rgba(17, 17, 17, 0.95); 
+            width: 100%; text-align: center;
             padding: 8px 0; font-size: 20px; color: #dddddd;
             text-transform: uppercase; letter-spacing: 4px;
-            border-bottom: 2px solid #252525; box-shadow: 0 -5px 20px rgba(0,0,0,0.6);
+            border-bottom: 2px solid #252525;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.6);
             border-top-left-radius: 10px; border-top-right-radius: 10px;
         }
-        .center-block { display: flex; flex-direction: column; align-items: center; position: relative; }
+        /* Блок по центру, объединяющий раунд и пару */
+        .center-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        /* Плашка Раунда (сверху над номером пары) */
         .round-bar {
-            background: #000000; color: #ffffff; font-family: 'Bebas Neue', sans-serif;
-            font-size: 28px; padding: 4px 25px; letter-spacing: 3px;
-            border-top-left-radius: 6px; border-top-right-radius: 6px;
-            border: 2px solid #252525; border-bottom: none; min-width: 110px; text-align: center; margin-bottom: -1px; z-index: 10;
+            background: #000000;
+            color: #ffffff;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px; 
+            padding: 4px 25px;
+            letter-spacing: 3px;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            border: 2px solid #252525;
+            border-bottom: none;
+            min-width: 110px;
+            text-align: center;
+            margin-bottom: -1px; 
+            z-index: 10;
         }
+        /* Нижняя основная линия с бойцами */
         .main-bar { 
-            display: flex; width: 100%; align-items: flex-end; background: #1a1a1a; 
-            border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            display: flex; 
+            width: 100%;
+            align-items: flex-end; 
+            background: #1a1a1a; 
+            border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
         }
+        /* Общие стили для углов бойцов и центра */
         .badge { 
-            text-transform: uppercase; text-align: center; white-space: nowrap; font-family: 'Bebas Neue', sans-serif; 
-            font-size: 52px; letter-spacing: 1px; height: 85px; display: flex; align-items: center; box-sizing: border-box;
+            text-transform: uppercase; text-align: center; 
+            white-space: nowrap; font-family: 'Bebas Neue', sans-serif; 
+            font-size: 52px; 
+            letter-spacing: 1px; 
+            height: 85px; 
+            display: flex; align-items: center;
+            box-sizing: border-box;
         }
+        /* Номер пары (золотой центр) */
         .pair-num { 
-            background: linear-gradient(to bottom, #ffd700, #cca100); color: #000000; 
-            min-width: 180px; font-size: 42px; justify-content: center; z-index: 5; 
-            border-left: 1px solid rgba(0,0,0,0.2); border-right: 1px solid rgba(0,0,0,0.2);
+            background: linear-gradient(to bottom, #ffd700, #cca100); 
+            color: #000000; 
+            min-width: 180px; 
+            font-size: 42px; 
+            justify-content: center; 
+            z-index: 5; 
+            border-left: 1px solid rgba(0,0,0,0.2);
+            border-right: 1px solid rgba(0,0,0,0.2);
         }
-        .red-corner { background: linear-gradient(to left, #7a0000, #cc0000); flex: 1; justify-content: flex-end; padding-right: 35px; gap: 20px; }
-        .blue-corner { background: linear-gradient(to right, #002a99, #0044cc); flex: 1; justify-content: flex-start; padding-left: 35px; gap: 20px; }
+        /* Красный угол (левый) */
+        .red-corner { 
+            background: linear-gradient(to left, #7a0000, #cc0000); 
+            flex: 1; 
+            justify-content: flex-end; 
+            padding-right: 35px;
+            gap: 20px; 
+        }
+        /* Синий угол (правый) */
+        .blue-corner { 
+            background: linear-gradient(to right, #002a99, #0044cc); 
+            flex: 1; 
+            justify-content: flex-start; 
+            padding-left: 35px;
+            gap: 20px; 
+        }
+        /* Стили для логотипа клуба */
         .club-logo { width: 55px; height: 55px; object-fit: contain; border-radius: 50%; }
     </style>
 </head>
 <body>
 
     <div class="graphics-wrapper">
+        <!-- Название турнира -->
         <div class="tournament-bar" id="tournament">ЗАГРУЗКА...</div>
+        
         <div class="main-bar">
+            <!-- Красный угол -->
             <div class="badge red-corner">
                 <span id="red">...</span>
                 <img src="" class="club-logo" id="red-logo" style="display:none;">
             </div>
+            
+            <!-- Центральный блок: Раунд + Пара -->
             <div class="center-block">
                 <div class="round-bar" id="round">...</div>
                 <div class="badge pair-num" id="pair">...</div>
             </div>
+            
+            <!-- Синий угол -->
             <div class="badge blue-corner">
                 <img src="" class="club-logo" id="blue-logo" style="display:none;">
                 <span id="blue">...</span>
@@ -71,24 +141,16 @@
             fetch(`data.json?v=${Date.now()}`)
                 .then(res => { if (!res.ok) throw new Error(); return res.json(); })
                 .then(data => {
-                    // Базовые общие настройки
                     document.getElementById('tournament').innerText = data.tournament_title || '';
+                    document.getElementById('pair').innerText = data.pair_num || '';
                     document.getElementById('round').innerText = data.round_num || '';
+                    document.getElementById('red').innerText = data.red_name || '';
+                    document.getElementById('blue').innerText = data.blue_name || '';
                     
-                    // Умное считывание текущей пары из списка
-                    const index = data.current_index || 0;
-                    const currentFight = data.fights && data.fights[index] ? data.fights[index] : null;
-                    
-                    if (currentFight) {
-                        document.getElementById('pair').innerText = currentFight.pair_num || '';
-                        document.getElementById('red').innerText = currentFight.red_name || '';
-                        document.getElementById('blue').innerText = currentFight.blue_name || '';
-                    }
-                    
-                    // Обновление логотипов
                     const redLogo = document.getElementById('red-logo');
                     const blueLogo = document.getElementById('blue-logo');
-                    if (data.logo_url && data.logo_url.trim() !== "") {
+                    
+                    if (data.logo_url && data.logo_url.trim() !== "" && data.logo_url !== "https://icons8.com") {
                         redLogo.src = data.logo_url; redLogo.style.display = "block";
                         blueLogo.src = data.logo_url; blueLogo.style.display = "block";
                     } else {
