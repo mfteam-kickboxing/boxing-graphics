@@ -1,8 +1,23 @@
 {
   "tournament_title": "Открытый ринг Moscow fight team",
-  "pair_num": "Пара №1",
-  "round_num": "РАУНД 2",
-  "red_name": "Иванов Иван",
-  "blue_name": "Петров Петр",
-  "logo_url": "https://freeimage.host"
+  "logo_url": "https://freeimage.host",
+  "current_index": 0,
+  "round_num": "РАУНД 1",
+  "fights": [
+    {
+      "pair_num": "Пара №1",
+      "red_name": "Иванов Иван",
+      "blue_name": "Петров Петр"
+    },
+    {
+      "pair_num": "Пара №2",
+      "red_name": "Алиев Марат",
+      "blue_name": "Сидоров Олег"
+    },
+    {
+      "pair_num": "Пара №3",
+      "red_name": "Попов Сергей",
+      "blue_name": "Ахмедов Руслан"
+    }
+  ]
 }
