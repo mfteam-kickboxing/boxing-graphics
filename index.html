@@ -2,58 +2,96 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Титры MFteam</title>
+    <title>Титры Бокс / Кикбоксинг PRO</title>
+    <!-- Подключаем профессиональный спортивный шрифт Bebas Neue -->
+    <link href="https://googleapis.com" rel="stylesheet">
     <style>
         body {
             margin: 0; padding: 0; background: transparent;
-            font-family: 'Arial', sans-serif; font-weight: bold; color: white;
+            font-family: 'Manrope', sans-serif; font-weight: 700; color: white;
             overflow: hidden; width: 1920px; height: 1080px;
         }
-        /* Главный контейнер внизу экрана */
-        .overlay-container {
+        /* Главный контейнер графики */
+        .graphics-wrapper {
             position: absolute; bottom: 60px; left: 50%;
-            transform: translateX(-50%); display: flex; align-items: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7); border-radius: 6px; overflow: hidden;
+            transform: translateX(-50%); display: flex; flex-direction: column; align-items: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.8); border-radius: 8px; overflow: hidden;
         }
-        /* Общие стили для всех плашек */
-        .badge { padding: 18px 30px; font-size: 26px; text-transform: uppercase; text-align: center; white-space: nowrap; }
-        /* Номер пары (серый центр) */
-        .pair-num { background: #222222; min-width: 140px; color: #f0f0f0; border-bottom: 4px solid #444444; }
+        /* Верхняя плашка с названием турнира */
+        .tournament-bar {
+            background: #111111; width: 100%; text-align: center;
+            padding: 6px 0; font-size: 18px; color: #aaaaaa;
+            text-transform: uppercase; letter-spacing: 3px;
+            border-bottom: 1px solid #222222;
+        }
+        /* Нижняя основная линия с бойцами */
+        .main-bar { display: flex; align-items: center; background: #1a1a1a; }
+        .badge { 
+            padding: 16px 30px; text-transform: uppercase; text-align: center; 
+            white-space: nowrap; font-family: 'Bebas Neue', sans-serif; font-size: 38px; letter-spacing: 1px; 
+        }
+        /* Номер пары (стильный контрастный центр) */
+        .pair-num { background: #ffd700; color: #000000; min-width: 120px; font-size: 34px; padding: 19px 20px; }
         /* Красный угол (левый) */
-        .red-corner { background: #b30000; min-width: 320px; text-align: right; border-bottom: 4px solid #ff3333; }
+        .red-corner { background: linear-gradient(to left, #8b0000, #b30000); min-width: 360px; text-align: right; display: flex; align-items: center; justify-content: flex-end; gap: 15px; }
         /* Синий угол (правый) */
-        .blue-corner { background: #0044cc; min-width: 320px; text-align: left; border-bottom: 4px solid #3377ff; }
+        .blue-corner { background: linear-gradient(to right, #0033aa, #0044cc); min-width: 360px; text-align: left; display: flex; align-items: center; justify-content: flex-start; gap: 15px; }
+        /* Стили для логотипа клуба */
+        .club-logo { width: 42px; height: 42px; object-fit: contain; border-radius: 50%; }
     </style>
 </head>
 <body>
 
-    <div class="overlay-container">
-        <div class="badge red-corner" id="red">Загрузка...</div>
-        <div class="badge pair-num" id="pair">...</div>
-        <div class="badge blue-corner" id="blue">Загрузка...</div>
+    <div class="graphics-wrapper">
+        <!-- Название турнира -->
+        <div class="tournament-bar" id="tournament">ЗАГРУЗКА...</div>
+        
+        <div class="main-bar">
+            <!-- Красный угол -->
+            <div class="badge red-corner">
+                <span id="red">...</span>
+                <img src="" class="club-logo" id="red-logo" style="display:none;">
+            </div>
+            
+            <!-- Номер пары -->
+            <div class="badge pair-num" id="pair">...</div>
+            
+            <!-- Синий угол -->
+            <div class="badge blue-corner">
+                <img src="" class="club-logo" id="blue-logo" style="display:none;">
+                <span id="blue">...</span>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Скрипт запрашивает данные из data.json. v= исключает зависание кэша в Larix
         function updateData() {
             fetch(`data.json?v=${Date.now()}`)
-                .then(res => {
-                    if (!res.ok) throw new Error();
-                    return res.json();
-                })
+                .then(res => { if (!res.ok) throw new Error(); return res.json(); })
                 .then(data => {
-                    // Заполняем плашки данными, которые вы ввели в панели CloudCannon
+                    // Обновляем текстовые поля
+                    document.getElementById('tournament').innerText = data.tournament_title || '';
                     document.getElementById('pair').innerText = data.pair_num || '';
                     document.getElementById('red').innerText = data.red_name || '';
                     document.getElementById('blue').innerText = data.blue_name || '';
+                    
+                    // Обновляем логотипы, если ссылка заполнена
+                    const redLogo = document.getElementById('red-logo');
+                    const blueLogo = document.getElementById('blue-logo');
+                    
+                    if (data.logo_url && data.logo_url.trim() !== "") {
+                        redLogo.src = data.logo_url; redLogo.style.display = "block";
+                        blueLogo.src = data.logo_url; blueLogo.style.display = "block";
+                    } else {
+                        redLogo.style.display = "none"; blueLogo.style.display = "none";
+                    }
                 })
                 .catch(err => {
-                    console.error("Ошибка обновления данных:", err);
+                    console.error("Ошибка:", err);
                     document.getElementById('pair').innerText = "ОШИБКА";
                 });
         }
 
-        // Обновление экрана каждые 3 секунды
         setInterval(updateData, 3000);
         updateData();
     </script>
