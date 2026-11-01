@@ -9,17 +9,21 @@
         .card { background: #1e1e1e; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 15px; border: 1px solid #2d2d2d; }
         h2 { margin-top: 0; font-size: 18px; color: #ffd700; text-transform: uppercase; letter-spacing: 1px; }
         textarea { width: 100%; padding: 12px; background: #2d2d2d; border: 1px solid #444; border-radius: 6px; color: white; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; }
-        .output-box { background: #111; border: 1px dashed #555; padding: 15px; color: #00ff66; font-family: monospace; white-space: pre-wrap; word-break: break-all; border-radius: 6px; margin-top: 10px; font-size: 13px; }
+        .btn { width: 100%; padding: 12px; background: #007a33; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-bottom: 15px; }
+        .btn:active { background: #005c25; }
+        .output-box { background: #111; border: 1px dashed #555; padding: 15px; color: #00ff66; font-family: monospace; white-space: pre-wrap; word-break: break-all; border-radius: 6px; font-size: 13px; }
     </style>
 </head>
 <body>
 
     <div class="card">
         <h2>Генератор списка пар (из Word)</h2>
-        <div style="font-size:14px; color:#888; margin-bottom:10px;">Вставьте сюда список пар из Ворда (Формат: Боец 1 - Боец 2):</div>
+        <div style="font-size:14px; color:#888; margin-bottom:10px;">Вставьте список (Формат: Боец 1 - Боец 2):</div>
         <textarea id="raw_list" rows="10" placeholder="Иванов Иван - Петров Петр&#10;Алиев Марат - Сидоров Олег" oninput="buildJSON()"></textarea>
         
-        <div style="font-weight:bold; color:#ffd700; margin-bottom:5px;">Скопируйте весь зеленый код ниже и вставьте его в файл data.json на GitHub:</div>
+        <button class="btn" onclick="copyJSON()">Скопировать готовый JSON</button>
+        
+        <div style="font-weight:bold; color:#ffd700; margin-bottom:5px;">Результат для data.json на GitHub:</div>
         <div class="output-box" id="json_output"></div>
     </div>
 
@@ -45,6 +49,17 @@
             const dataConfig = { fights: parsedFights };
             document.getElementById('json_output').innerText = JSON.stringify(dataConfig, null, 2);
         }
+
+        function copyJSON() {
+            const jsonText = document.getElementById('json_output').innerText;
+            navigator.clipboard.writeText(jsonText).then(() => {
+                alert('JSON успешно скопирован в буфер обмена!');
+            }).catch(err => {
+                console.error('Ошибка при копировании:', err);
+                alert('Не удалось скопировать автоматически. Выделите текст в зеленой рамке вручную.');
+            });
+        }
+
         buildJSON();
     </script>
 </body>
